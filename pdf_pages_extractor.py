@@ -45,13 +45,6 @@ def aspect_fit_and_pad(image, target_size=(1634,2539)):
         new_image.paste(image, (0, y))
         return [new_image]
 
-def is_chessboard_present(image):
-    return True
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    pattern_size = (7, 7)
-    found, corners = cv2.findChessboardCorners(gray, pattern_size, None)
-    return found
-
 def convert_pdf_to_images(pdf_path, total_width):
     doc = fitz.open(pdf_path)
     images = []
@@ -95,13 +88,9 @@ def process_file(file_path, output_root, total_width):
         open_cv_image = np.array(page)
         open_cv_image = open_cv_image[:, :, ::-1].copy()
 
-        # if is_chessboard_present(open_cv_image):
         processed_images = aspect_fit_and_pad(Image.fromarray(open_cv_image))
         for j, img in enumerate(processed_images):
-            # img = np.array(img)
-            # img = img[:, :, ::-1].copy()
             tiff_filename = os.path.join(output_folder, f"page_{i + 1:02d}_{j}.png")
-            #cv2.imwrite(tiff_filename, img, params=(cv2.IMWRITE_TIFF_COMPRESSION, 8))
             img.save(tiff_filename,"PNG")
 
     if not is_pdf:
